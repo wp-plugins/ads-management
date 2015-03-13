@@ -1,0 +1,18 @@
+
+.sponsor-ads {
+    text-align: center;
+    max-width: 100%;
+    padding: 10px;
+}
+.sponsor-ads a,
+.sponsor-ads a img {
+    border: medium none;
+}
+.sponsor-ads a img {
+    margin: 0;    
+}
+
+.sponsor-ads.content-top, .sponsor-ads.content-bottom {
+    padding-left: 0px;
+    padding-right: 0px;
+}
