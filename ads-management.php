@@ -2,7 +2,7 @@
 /*
 Plugin Name: Ads Management
 Plugin URI: http://microsolutionsbd.com/
-Description: Ads Management Plugin Description.
+Description: Ads Management plugin helps you to save your advertisement script and to use on post and page using shortcode.
 Version: 0.1
 Author: Micro Solutions Bangladesh
 Author URI: http://microsolutionsbd.com/
