@@ -11,7 +11,6 @@ class MsbdAdsMDb extends MsbdCrud {
 
     function __construct($parent) {
         $this->parent = $parent;
-        $this->sqltable = $this->parent->sqltable;
         
         $this->adv_sizes = array(
             "responsive" => array("name"=>"responsive", "width"=>"0", "height"=>"0"),
@@ -37,40 +36,109 @@ class MsbdAdsMDb extends MsbdCrud {
         parent::__construct();
     }
 
-    function create_update_database() {
-        global $wpdb;
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-                
-        $sql = "CREATE TABLE $this->sqltable (
-                 id int(11) NOT NULL AUTO_INCREMENT,
-                 sponsor_type varchar(50) DEFAULT '',
-                 content_type enum('mix','image','text') NOT NULL DEFAULT 'mix',
-                 script text,
-                 remark text,
-                 adv_sizes varchar(50) DEFAULT NULL,
-                 width varchar(20) DEFAULT NULL,
-                 height varchar(20) DEFAULT NULL,
-                 date_time datetime NOT NULL,
-                 action_by_ip varchar(15) DEFAULT NULL,
-                 status enum('active','inactive') NOT NULL DEFAULT 'inactive',
-                PRIMARY KEY (id)
-                )
-                CHARACTER SET utf8
-                COLLATE utf8_general_ci;";
-        dbDelta($sql);
-    }
 
+
+    function adsmp_serve_adv($oArray) {
+        global $wpdb, $post;
+        
+        $post_categories = wp_get_post_categories( $post->ID );
+        
+        extract($oArray);
+        
+        $query = "SELECT main.*, terms_rel.term_slug FROM {$wpdb->msbd_adsmp_main_tbl} main";
+        $query .= " LEFT OUTER JOIN {$wpdb->msbd_adsmp_terms_rel_tbl} terms_rel";
+        $query .= " ON main.id = terms_rel.adv_id";
+        $query .= " WHERE status='active' AND content_type='{$content_type}'";
+        
+        if( !empty($sponsor_type) ) {
+            $query .= " AND sponsor_type='{$sponsor_type}'";
+        }
+        
+        if( $width!="" && $height!="" ) {
+            $query .= " AND height='{$height}' AND width='{$width}'";
+        } else {
+            $query .= " AND adv_sizes='{$adv_sizes}'";
+        }
+
+        $query .= " AND term_slug IN (";
+        
+        $isFirst=true;
+        foreach($post_categories as $c){
+            $cat = get_category( $c );
+            
+            if(!$isFirst) {
+                $query .= ",";                
+            }
+            
+            $query .= "'".$cat->slug."'";
+            $isFirst = false;            
+        }
+        $query .= ")";
+        
+        $query .= " ORDER BY rand() LIMIT 1";
+        
+        
+        //echo "<br>".$query."<br>";
+        
+        $output = $wpdb->get_row($query);
+        //$output = $wpdb->get_results($query);
+        
+        //print_r($output);
+        
+        return (array)$output;
+        
+    }
+    
+    
+
+
+    function delete_terms_rel($adv_id) {
+        global $wpdb;
+        $wpdb->query("DELETE FROM {$wpdb->msbd_adsmp_terms_rel_tbl} WHERE adv_id='{$adv_id}'");
+    }
+    
+    
+
+    function get_adv_record($id, $isDebug=false) {
+        global $wpdb;
+        $var_query = "SELECT * FROM {$wpdb->msbd_adsmp_main_tbl} WHERE id='{$id}' LIMIT 1";
+        
+        if($isDebug)
+            echo 'Query: '.$var_query."<br>";
+        
+        $var_adv = $wpdb->get_row($var_query);
+        
+        if ( empty($var_adv) || is_null($var_adv) ) {
+            return array();
+        }
+        
+        
+        $var_query = "SELECT * FROM {$wpdb->msbd_adsmp_terms_rel_tbl} WHERE adv_id='{$id}'";
+        $var_terms_rel = $wpdb->get_results($var_query);
+        
+        $rs = array(
+            "adv" => (array)$var_adv,
+            "terms_rel" => (array)$var_terms_rel
+        );
+        
+        
+        if($isDebug) {
+            echo "RS:: <br>";
+            print_r($rs);
+        }   
+            
+        return $rs;
+    }
+    
 
 
     function check_exist($filter, $isDebug=false) {
         global $wpdb;
-        $var_query = 'SELECT * FROM ' . $this->sqltable . ' WHERE '.$filter.' LIMIT 1';
+        $var_query = 'SELECT * FROM ' . $wpdb->msbd_adsmp_main_tbl . ' WHERE '.$filter.' LIMIT 1';
         if($isDebug)
             echo 'Query: '.$var_query."<br>";
         
         $output = $wpdb->get_row($var_query);
-        
-        //print_r($output);
         
         $rs = false;
         if($output)
@@ -116,3 +184,5 @@ class MsbdAdsMDb extends MsbdCrud {
 
 }
 /* end of file msbd-adsm-db.php */
+
+
