@@ -16,29 +16,31 @@ class MsbdCrud {
     function __construct() {
         global $wpdb;
         
-        //Check if the $this->sqltable exist; if not create / update table
-        $tableSearch = $wpdb->get_var("SHOW TABLES LIKE '$this->sqltable'");
-        if ($tableSearch != $this->sqltable) {
-            $this->create_update_database();
-        }
     }
 
 
 
-    function init() {
+    function set_table($tbl, $chckTbl=false) {
         global $wpdb;
-        $tableSearch = $wpdb->get_var("SHOW TABLES LIKE '$this->sqltable'");
-        if ($tableSearch != $this->sqltable) {
-            $this->create_update_database();
+        
+        if($tbl=="main_tbl")
+            $this->sqltable = $wpdb->msbd_adsmp_main_tbl;
+        else if($tbl=="terms_rel_tbl")
+            $this->sqltable = $wpdb->msbd_adsmp_terms_rel_tbl;
+        else
+            $this->sqltable = $tbl;
+        
+        if($chckTbl) {
+            $tableSearch = $wpdb->get_var("SHOW TABLES LIKE '$this->sqltable'");
+            if ($tableSearch != $this->sqltable) {
+                //echo '<div class="alert">Table $this->sqltable not exist!</div>';
+                return false;
+            }            
         }
+        return true;
     }
 
 
-
-
-    function create_update_database() {
-        echo '<div class="alert">Required table not exist! You need to override the function create_update_database!</div>';
-    }
 
 
     function reset_query() {
@@ -182,10 +184,27 @@ class MsbdCrud {
         if ($id != NULL) {
             // update row
             $result = $wpdb->update($this->sqltable, $data, array('id' => $id));
+            
+            if($result) {
+                $result = $id ;
+            } else {
+                $result = false;
+            }
+
         } else {
             // insert new row
             $result = $wpdb->insert($this->sqltable, $data);
+            
+            if($result) {
+                $result = $wpdb->insert_id ;
+            } else {
+                $result = false;
+            }
         }
+        
+        
+        
+        
         return $result;
     }
 
