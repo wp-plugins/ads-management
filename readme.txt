@@ -4,7 +4,7 @@ Donate Link: http://microsolutionsbd.com/donate
 Tags: manage ads, manage advertisements, affiliate advertising, post ads, adsense, google adsense, ads shortcode
 Requires at least: 3.6
 Tested up to: 4.2.2
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

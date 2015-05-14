@@ -3,7 +3,7 @@
 Plugin Name: Ads Management
 Plugin URI: http://microsolutionsbd.com/
 Description: Ads Management Plugin Description.
-Version: 0.2.1
+Version: 0.2.2
 Author: Micro Solutions Bangladesh
 Author URI: http://microsolutionsbd.com/
 Text Domain: msbd-adsmp
@@ -14,7 +14,7 @@ define('MSBD_ADSMP_URL', trailingslashit(plugins_url(basename(dirname(__FILE__))
 
 class AdsManagement {
     
-    var $version = '0.2.1';
+    var $version = '0.2.2';
     var $plugin_name = 'Ads Management';
 
     var $admin;

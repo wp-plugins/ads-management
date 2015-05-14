@@ -41,8 +41,6 @@ class MsbdAdsMDb extends MsbdCrud {
     function adsmp_serve_adv($oArray) {
         global $wpdb, $post;
         
-        $post_categories = wp_get_post_categories( $post->ID );
-        
         extract($oArray);
         
         $query = "SELECT main.*, terms_rel.term_slug FROM {$wpdb->msbd_adsmp_main_tbl} main";
@@ -61,21 +59,31 @@ class MsbdAdsMDb extends MsbdCrud {
         }
 
 
-        if( !is_page() ) {
-            $query .= " AND term_slug IN (";
+        if( !is_page() && isset($post->ID) ) {
+            $post_categories = wp_get_post_categories( $post->ID );
+            $term_slugs = "";
+            
+            
+            //$query .= " AND term_slug IN (";
             
             $isFirst=true;
             foreach($post_categories as $c){
                 $cat = get_category( $c );
                 
                 if(!$isFirst) {
-                    $query .= ",";                
+                    //$query .= ",";
+                    $term_slugs .= ","; 
                 }
                 
-                $query .= "'".$cat->slug."'";
+                $term_slugs .= "'".$cat->slug."'";
+                //$query .= "'".$cat->slug."'";
                 $isFirst = false;            
             }
-            $query .= ")";
+            //$query .= ")";
+            
+            if(!empty($term_slugs)) {
+                $query .= " AND term_slug IN ($term_slugs)";
+            }
         }
     
         $query .= " ORDER BY rand() LIMIT 1";
