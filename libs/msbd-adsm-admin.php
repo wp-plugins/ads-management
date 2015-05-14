@@ -2,11 +2,11 @@
 class MsbdAdsmAdmin {
 
     var $parent;
-    var $db;
+    //var $db;
 
     function __construct($parent) {
         $this->parent = $parent;
-        $this->db = $this->parent->db;
+        //$this->db = $this->parent->db;
         
         add_action('admin_menu', array(&$this, 'init_admin_menu'));
         
@@ -35,7 +35,7 @@ class MsbdAdsmAdmin {
             'msbd_adsmp_manage',
             array(&$this, 'render_adsmp_manage_page'),
             MSBD_ADSMP_URL.'images/msbd_favicon_16.png',
-            '89.92'
+            '11.11'
         );
         
         add_submenu_page(
@@ -71,7 +71,12 @@ class MsbdAdsmAdmin {
 
     function load_admin_scripts_styles() {
         wp_enqueue_style( "msbd-adsmp-admin", MSBD_ADSMP_URL . 'css/msbd-adsmp-admin.css', false, false );
-               
+        
+        //Add Masonary library only on adv add or edit page
+        if( isset($_REQUEST['page']) && $_REQUEST['page']=="msbd_adsmp_add_edit" ) {
+            wp_enqueue_script( "msbd-adsm-admin-masonry-pkgd", MSBD_ADSMP_URL ."js/masonry.pkgd.min.js", "jquery", false, true);
+        }
+           
         wp_enqueue_script( "msbd-adsm-admin-script", MSBD_ADSMP_URL ."js/msbd-adsm-admin-script.js", "jquery", false, true);
     }
 
@@ -264,24 +269,30 @@ class MsbdAdsmAdmin {
         
         $output = '
             <div class="instructions">                
-                <p>Currently we are peoviding only a single shortcode <strong>[manage_adv]</strong> to to show advertisement on diffenent place where shortcode tag is allowed by wordpress.</p>
+                <p>Currently we are peoviding two shortcodes <strong>[adsmp]</strong> &amp; <strong>[manage_adv]</strong> to show advertisement on diffenent place where shortcode tag is allowed by wordpress.</p>
+                
+                <p><strong>New Feature</strong>: We have added a feature to add multiple advertisement with same size, sponsor beacause now you can select category/categories of post for any script! If the plugin found more then one script for any shortcode, then random script will publish.</p>
                 
                 <p><strong>Supported attributes for <i>[manage_adv]</i> shortcode are:</strong></p>
                 
                 <ul>
-                    <li>width : number (default 468)</li>
-                    <li>height : number (default 60)</li>
+                    <li>width and height: number (default 0 or empty).</li>
                     <li>size : string (default banner)</li>
-                    <li>sponsor : enum value as adsense, amazon (default adsense)</li>
+                    <li>sponsor : enum value as adsense, amazon, clickbank, affiliate (default empty)</li>
                     <li>type : enum value as mix, image, text (default mix)</li>
                     <li>wrap_class : text as style class (default empty)</li>
                 </ul>
                 
-                <p>width &amp; height combination or only size should use to detect ad size. If width &amp; height combination are provided then the size parameter will be ignored!</p>
+                <p>width &amp; height combination or only size should use to detect ad size. If width &amp; height combination are provided then the size parameter will be ignored!</p>                
+                <p><strong>Few examles:</strong> the following examples are same. because of the default value set by the plugin.</p>                
+                <p><strong>[adsmp]</strong>
+                <br><strong>[adsmp size="banner" type="mix"]</strong></p>
                 
-                <p><strong>Few examles:</strong> the following examples are same. because of the default value set by the plugin.</p>
                 
-                <p><strong>[manage_adv]</strong><br><strong>[manage_adv width="468" height="60" sponsor="adsense" type="mix"]</strong><br><strong>[manage_adv size="banner" sponsor="adsense" type="mix"]</strong></p>
+                <p>Now the sponsor attribute is not required. But if the sponsor attribute added then publishing the advertisement strictly by sponsor.</p>                
+                <p><strong>Few examles:</strong>If you use this <strong>[adsmp width="468" height="60" type="mix"]</strong> shortcode and the plugin found script from different sponsor will publish randomly!</p>
+                
+                <p><strong>[** Let us know if you found something to be fix!]</strong></p>
                 
             </div>';
         

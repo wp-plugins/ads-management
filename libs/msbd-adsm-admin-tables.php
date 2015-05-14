@@ -56,13 +56,26 @@ class Msbd_Adsm_Table extends WP_List_Table {
     }
     function column_script($item) {
         
-        if( !empty($item->width) && !empty($item->height) ) {        
-            $output = sprintf('<span class="msbd-shortcode">[manage_adv width="%s" height="%s" sponsor="%s" type="%s"]</div>', $item->width, $item->height, $item->sponsor_type, $item->content_type );
-        } else {
-            $output = sprintf('<span class="msbd-shortcode">[manage_adv size="%s" sponsor="%s" type="%s"]</div>', $item->adv_sizes, $item->sponsor_type, $item->content_type );
+        $var_short_code = '<span class="msbd-shortcode">[adsmp';
+        $var_short_code .= ' type="'.$item->content_type.'"';
+        
+        if( !empty($item->sponsor_type) ) {
+            $var_short_code .= ' sponsor="'.$item->sponsor_type.'"';
         }
         
-        return $output;
+        if( !empty($item->width) && !empty($item->height) ) {        
+            $var_short_code .= ' width="'.$item->width.'" height="'.$item->height.'"';
+            
+            //$output = sprintf('<span class="msbd-shortcode">[adsmp width="%s" height="%s" sponsor="%s" type="%s"]</div>', $item->width, $item->height, $item->sponsor_type, $item->content_type );
+        } else {
+            //$output = sprintf('<span class="msbd-shortcode">[adsmp size="%s" sponsor="%s" type="%s"]</div>', $item->adv_sizes, $item->sponsor_type, $item->content_type );
+            
+            $var_short_code .= ' size="'.$item->adv_sizes.'"';
+        }
+        
+        $var_short_code .= ']</div>';
+        
+        return $var_short_code;
     }
     function column_status($item) {
         return $item->status;
@@ -140,11 +153,11 @@ class Msbd_Adsm_Table extends WP_List_Table {
                     switch ($this_action) {
                         case 'active':
                         case 'inactive':
-                            $wpdb->update($msbdAdsMang->sqltable, array('status' => $this_action), array('id' => $id));
+                            $wpdb->update($wpdb->msbd_adsmp_main_tbl, array('status' => $this_action), array('id' => $id));
                             break;
 
                         case 'delete':
-                            $wpdb->query("DELETE FROM $msbdAdsMang->sqltable WHERE id=\"$id\"");
+                            $wpdb->query("DELETE FROM $wpdb->msbd_adsmp_main_tbl WHERE id=\"$id\"");
                             break;
                     }
                 }
@@ -189,10 +202,10 @@ class Msbd_Adsm_Table extends WP_List_Table {
         $whereStatement = ($this->flag !== '') ? " WHERE status='{$this->flag}'" : "";
         
         $orderby = (!empty($_GET['orderby'])) ? $_GET['orderby'] : 'id';
-        $order = (!empty($_GET['order'])) ? $_GET['order'] : 'asc';
+        $order = (!empty($_GET['order'])) ? $_GET['order'] : 'desc';
         $orderStatement = ' ORDER BY ' . $orderby . ' ' . $order;
         
-        $data = $wpdb->get_results("SELECT * FROM " . $msbdAdsMang->db->sqltable . $whereStatement . $orderStatement);
+        $data = $wpdb->get_results("SELECT * FROM " . $wpdb->msbd_adsmp_main_tbl . $whereStatement . $orderStatement);
         $current_page = $this->get_pagenum();
         $total_items = count($data);
         $data = array_slice($data,(($current_page-1)*$per_page),$per_page);

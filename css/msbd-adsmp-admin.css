@@ -82,3 +82,13 @@
 .msbd-adsmp .notice.success {
     border-color: #00ff00;
 }
+
+.adsmp-masonry-wrapper {
+
+}
+.cat_box ul {    
+    margin-top: 8px;
+}
+.cat_box ul ul {
+    padding-left: 15px;
+}
