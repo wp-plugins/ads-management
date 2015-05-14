@@ -4,7 +4,7 @@ Donate Link: http://microsolutionsbd.com/donate
 Tags: manage ads, manage advertisements, affiliate advertising, post ads, adsense, google adsense, ads shortcode
 Requires at least: 3.6
 Tested up to: 4.2.2
-Stable tag: 0.2
+Stable tag: 0.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,9 @@ Though we have tried our best to make it useful for you and we are using this pl
 
 
 == Changelog ==
+
+= 0.2.1 =
+* Fixed empty category issue for pages!
 
 = 0.2 =
 * Currently we are peoviding two shortcodes [adsmp] & [manage_adv] to show advertisement on diffenent place where shortcode tag is allowed by wordpress.

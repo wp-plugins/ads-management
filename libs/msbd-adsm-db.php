@@ -60,21 +60,24 @@ class MsbdAdsMDb extends MsbdCrud {
             $query .= " AND adv_sizes='{$adv_sizes}'";
         }
 
-        $query .= " AND term_slug IN (";
-        
-        $isFirst=true;
-        foreach($post_categories as $c){
-            $cat = get_category( $c );
+
+        if( !is_page() ) {
+            $query .= " AND term_slug IN (";
             
-            if(!$isFirst) {
-                $query .= ",";                
+            $isFirst=true;
+            foreach($post_categories as $c){
+                $cat = get_category( $c );
+                
+                if(!$isFirst) {
+                    $query .= ",";                
+                }
+                
+                $query .= "'".$cat->slug."'";
+                $isFirst = false;            
             }
-            
-            $query .= "'".$cat->slug."'";
-            $isFirst = false;            
+            $query .= ")";
         }
-        $query .= ")";
-        
+    
         $query .= " ORDER BY rand() LIMIT 1";
         
         
